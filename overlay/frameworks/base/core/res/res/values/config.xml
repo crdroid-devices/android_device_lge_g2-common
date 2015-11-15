@@ -284,18 +284,10 @@
         <item>0</item>
     </integer-array>
 
-    <!-- Performance profiles -->
-    <string name="config_perf_profile_prop">sys.perf.profile</string>
-    <string name="config_perf_profile_default_entry">1</string>
-
     <bool name="config_lidControlsSleep">true</bool>
 
-    <!-- Enable the option to check proximity sensor when deciding whether to
-         turn the screen on
-         NOTE ! - Enable for devices that have a fast response proximity sensor
-    -->
-    <bool name="config_proximityCheckOnWake">true</bool>
-    <integer name="config_proximityCheckTimeout">400</integer>
+    <!-- Disable Button backlight settings -->
+    <integer name="config_buttonBrightnessSettingDefault">0</integer>
 
     <!--  Maximum number of supported users -->
     <integer name="config_multiuserMaximumUsers">4</integer>
@@ -312,5 +304,8 @@
 
     <!-- Doze: force using accelerometer as pick up sensor -->
     <bool name="config_dozeUseAccelerometer">true</bool>
+
+    <!-- enable doze powersaving mode -->
+    <bool name="config_enableAutoPowerModes">true</bool>
 
 </resources>

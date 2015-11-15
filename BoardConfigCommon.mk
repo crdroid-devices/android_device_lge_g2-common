@@ -37,15 +37,16 @@ TARGET_NO_RADIOIMAGE := true
 BOARD_CUSTOM_BOOTIMG := true
 BOARD_CUSTOM_BOOTIMG_MK := device/lge/g2-common/releasetools/mkbootimg.mk
 BOARD_KERNEL_BASE := 0x00000000
-BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.hardware=g2 androidboot.bootdevice=msm_sdcc.1 user_debug=31 msm_rtb.filter=0x0 mdss_mdp.panel=1:dsi:0:qcom,mdss_dsi_g2_lgd_cmd
+BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.hardware=g2 androidboot.bootdevice=msm_sdcc.1 user_debug=31
 BOARD_KERNEL_PAGESIZE := 2048
 BOARD_KERNEL_SEPARATED_DT := true
-BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x05000000 --tags_offset 0x04800000
+BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x05000000 --tags_offset 0x00000100
 TARGET_KERNEL_SOURCE := kernel/lge/msm8974
 
 # Audio
 AUDIO_FEATURE_LOW_LATENCY_PRIMARY := true
 BOARD_USES_ALSA_AUDIO := true
+AUDIO_FEATURE_ENABLED_NEW_SAMPLE_RATE := true
 USE_CUSTOM_AUDIO_POLICY := 1
 
 # Bluetooth
@@ -55,6 +56,7 @@ BOARD_HAVE_BLUETOOTH := true
 BOARD_HAVE_BLUETOOTH_BCM := true
 
 # Camera
+COMMON_GLOBAL_CFLAGS += -DCAMERA_VENDOR_L_COMPAT
 COMMON_GLOBAL_CFLAGS += -DLG_CAMERA_HARDWARE
 USE_DEVICE_SPECIFIC_CAMERA := true
 
@@ -108,12 +110,14 @@ TARGET_RECOVERY_UPDATER_LIBS := librecovery_updater_g2
 TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_USERIMAGES_USE_F2FS := true
 
+COMMON_GLOBAL_CFLAGS += -DNO_SECURE_DISCARD
+COMMON_GLOBAL_CPPFLAGS += -DNO_SECURE_DISCARD
+
 # Releasetools
 TARGET_RELEASETOOLS_EXTENSIONS := device/lge/g2-common/releasetools
 
 # RIL
 BOARD_RIL_CLASS := ../../../device/lge/g2-common/ril/
-TARGET_RELEASE_CPPFLAGS += -DNEEDS_LGE_RIL_SYMBOLS
 
 # SELinux policies
 include device/qcom/sepolicy/sepolicy.mk
