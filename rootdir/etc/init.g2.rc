@@ -43,7 +43,8 @@ on early-init
 
 on init
     # Preload the BoringSSL wrapper
-    export LD_PRELOAD "/system/lib/libboringssl-compat.so:/system/lib/liblge.so"
+    export LD_PRELOAD "/system/lib/libboringssl-compat.so"
+    export LD_SHIM_LIBS /system/lib/libril.so|libril_shim.so
 
     mkdir /persist 0771 system system
     mkdir /factory 0775 system system
@@ -51,8 +52,20 @@ on init
     mkdir /mpt 0755 system system
     mkdir /sns 0775 system system
 
+    # Set permissions on persist
+    restorecon_recursive /persist
+    restorecon_recursive /persist-lg
+
+    # Create directory for wifi
+    mkdir /persist/wifi
+    chown wifi system /persist/wifi
+
     # Create directory for sensordaemon
     mkdir /sns/cal 0644 system system
+    mkdir /persist/sensors 0775 system root
+    write /persist/sensors/sensors_settings 1
+    chmod 0644 /persist/sensors/sensors_settings
+    chown system root /persist/sensors/sensors_settings
 
     # Support legacy paths
     symlink /sdcard /mnt/sdcard
@@ -107,10 +120,6 @@ on post-fs-data
     mkdir /data/nfc/param 770 nfc nfc
 
     # Create directory used by sensor subsystem
-    mkdir /persist/sensors 0775 system root
-    write /persist/sensors/sensors_settings 1
-    chmod 0644 /persist/sensors/sensors_settings
-    chown system root /persist/sensors/sensors_settings
     mkdir /data/misc/sensors 0775 system system
     restorecon_recursive /data/misc/sensors
 
@@ -129,9 +138,6 @@ on post-fs-data
 
     # Create directory for TZ Apps
     mkdir /data/misc/qsee 0770 system system
-
-    # wifi
-    chown wifi system /persist/wifi
 
     # Make sure the default firmware is loaded
     write /sys/module/bcmdhd/parameters/firmware_path "/system/etc/firmware/fw_bcmdhd.bin"
@@ -321,11 +327,6 @@ service audiod /system/bin/audiod
     user system
     group system
 
-service bridgemgrd /system/bin/bridgemgrd
-    class main
-    user radio
-    group radio
-
 service charger /sbin/healthd -c
     class charger
     critical
@@ -359,19 +360,6 @@ service netmgrd /system/bin/netmgrd
     user root
     group radio
 
-service ppd /system/bin/mm-pp-daemon
-    class late_start
-    disabled
-    user system
-    socket pps stream 0660 system system
-    group system graphics
-
-on property:init.svc.surfaceflinger=stopped
-    stop ppd
-
-on property:init.svc.surfaceflinger=running
-    start ppd
-
 service qcamerasvr /system/bin/mm-qcamera-daemon
     class late_start
     user camera
@@ -400,7 +388,12 @@ service sensors /system/bin/sensors.qcom
 service set_baseband /system/bin/sh /system/etc/set_baseband.sh
     class late_start
     user root
+    seclabel u:r:set_baseband:s0
     oneshot
+    disabled
+
+on property:sys.boot_completed=1
+    start set_baseband
 
 service thermal-engine /system/bin/thermal-engine
     class main
