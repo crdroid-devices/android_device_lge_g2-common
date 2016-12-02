@@ -374,4 +374,7 @@
          NOTE: This requires additional hardware-specific code.
     <bool name="config_ui_blur_enabled">true</bool> -->
 
+    <!-- Wether doze feature is enabled by default in settings. -->
+    <bool name="config_doze_enabled_by_default">true</bool>
+
 </resources>
